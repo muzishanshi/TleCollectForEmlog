@@ -5,6 +5,9 @@
 # 使用方法
 1、下载后需要把文件夹名改为：“tle_collect”。->启用->设置选择器->开始采集。
 
+# 使用注意
+此插件使用php5.6开发，如遇报错，只需调整php版本为php5.6即可。
+
 # 下载地址
 Github：https://github.com/muzishanshi/TleCollectForEmlog
 
