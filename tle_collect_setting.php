@@ -100,7 +100,7 @@ if ($action=='collect') {
 		'checked' => $user_cache[UID]['ischeck'] == 'y' ? 'n' : 'y',
 		'password' => ''
 	);
-	if (!$Log_Model->isRepeatPost($titleSql, $postTime)&&!$Log_Model->isRepeatPostByTitle($titleSql)) {
+	if (!$Log_Model->isRepeatPost($titleSql, $postTime)) {
 		$blogid=$Log_Model->addlog($logData);
 		$Tag_Model->addTag($titleprefix, $blogid);
 	}
@@ -260,7 +260,7 @@ if ($action=='collect') {
 				'checked' => $user_cache[UID]['ischeck'] == 'y' ? 'n' : 'y',
 				'password' => ''
 			);
-			if (!$Log_Model->isRepeatPost($titleSql, $postTime)&&!$Log_Model->isRepeatPostByTitle($titleSql)) {
+			if (!$Log_Model->isRepeatPost($titleSql, $postTime)) {
 				$blogid=$Log_Model->addlog($logData);
 				$Tag_Model->addTag($titleprefix, $blogid);
 			}
