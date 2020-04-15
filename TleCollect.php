@@ -10,6 +10,6 @@ Author URL: http://www.tongleer.com
 */
 if(!defined('EMLOG_ROOT')){die('err');}
 function tle_collect_menu(){
-	echo '<div class="sidebarsubmenu"><a href="./plugin.php?plugin=tle_collect">同乐采集</a></div>';
+	echo '<div class="sidebarsubmenu"><a href="./plugin.php?plugin=TleCollect">同乐采集</a></div>';
 }
 addAction('adm_sidebar_ext', 'tle_collect_menu');

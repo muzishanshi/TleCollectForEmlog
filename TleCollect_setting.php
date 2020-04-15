@@ -22,6 +22,7 @@ if ($action=='collect') {
 	$address = isset($_POST['address']) ? $_POST['address'] : '';
 	$character = isset($_POST['character']) ? $_POST['character'] : 'utf-8';
 	$coverimg = isset($_POST['coverimg']) ? $_POST['coverimg'] : '';
+	$coverimgattr = isset($_POST['coverimgattr']) ? $_POST['coverimgattr'] : '';
 	$title = isset($_POST['title']) ? $_POST['title'] : '';
 	$titleattr = isset($_POST['titleattr']) ? $_POST['titleattr'] : '';
 	$titleprefix = isset($_POST['titleprefix']) ? $_POST['titleprefix'] : '';
@@ -32,7 +33,7 @@ if ($action=='collect') {
 	LoginAuth::checkToken();
 	
 	if(!isset($address)||!isset($title)||!isset($content)){
-		emDirect("plugin.php?plugin=tle_collect&active_error=1");
+		emDirect("plugin.php?plugin=TleCollect&active_error=1");
 	}
 	if(strpos($address,'youku.com')){
 		$html='value';$iframe='';
@@ -43,7 +44,7 @@ if ($action=='collect') {
 	$data = QueryList::Query($address,array(
 		//采集规则库
 		//'规则名' => array('jQuery选择器','要采集的属性'),
-		'coverimg' => array($coverimg,'_src'),
+		'coverimg' => array($coverimg,$coverimgattr),
 		'title' => array($title,$titleattr),
 		'content' => array($content,$html,$filterContent),
 		'embed' => array('embed','src'),
@@ -107,13 +108,14 @@ if ($action=='collect') {
 	
 	$CACHE->updateCache();
 	
-	emDirect("plugin.php?plugin=tle_collect&active_start=1");
+	emDirect("plugin.php?plugin=TleCollect&active_start=1");
 }else if($action=='collectmul'){
 	$postDate = isset($_POST['postdate']) ? trim($_POST['postdate']) : '';
 	$date = isset($_POST['date']) ? addslashes($_POST['date']) : '';//修改前的文章时间
 	$pid = isset($_POST['pid']) ? $_POST['pid'] : '';
 	$address = isset($_POST['address']) ? $_POST['address'] : '';
 	$coverimg = isset($_POST['coverimg']) ? $_POST['coverimg'] : '';
+	$coverimgattr = isset($_POST['coverimgattr']) ? $_POST['coverimgattr'] : '';
 	$character = isset($_POST['character']) ? $_POST['character'] : 'utf-8';
 	$container = isset($_POST['container']) ? $_POST['container'] : '';
 	$filter = isset($_POST['filter']) ? $_POST['filter'] : '';
@@ -129,7 +131,7 @@ if ($action=='collect') {
 	LoginAuth::checkToken();
 	
 	if(!isset($pid)||!isset($address)||!isset($container)||!isset($title)||!isset($content)){
-		emDirect("plugin.php?plugin=tle_collect&page=mul&active_error=1");
+		emDirect("plugin.php?plugin=TleCollect&page=mul&active_error=1");
 	}
 	//采集某页面所有的图片
 	$domainStart=strpos($address,'http://')+7;
@@ -181,7 +183,7 @@ if ($action=='collect') {
 			'maxTry' => 3
 		),
 		'success' => function($a){
-			global $address,$title,$titleprefix,$content,$pid,$postTime,$Log_Model,$Tag_Model,$filterContent,$filterTitle,$coverimg;
+			global $address,$title,$titleprefix,$content,$pid,$postTime,$Log_Model,$Tag_Model,$filterContent,$filterTitle,$coverimg,$coverimgattr;
 			if(strpos($address,'youku.com')){
 				$html='value';$iframe='';
 			}else{
@@ -189,7 +191,7 @@ if ($action=='collect') {
 			}
 			//采集规则
 			$reg = array(
-				'coverimg' => array($coverimg,'_src'),
+				'coverimg' => array($coverimg,$coverimgattr),
 				//采集文章标题
 				'title' => array($title,$titleattr),
 				//采集文章正文内容,利用过滤功能去掉文章中的超链接，但保留超链接的文字，并去掉版权、JS代码等无用信息
@@ -269,7 +271,7 @@ if ($action=='collect') {
 	
 	$CACHE->updateCache();
 	
-	emDirect("plugin.php?plugin=tle_collect&page=mul&active_start=1");
+	emDirect("plugin.php?plugin=TleCollect&page=mul&active_start=1");
 }
 ?>
 <?php
@@ -284,10 +286,10 @@ function plugin_setting_view(){
 	<?php if(isset($_GET['active_start'])):?><span>采集结束</span><?php endif;?>
 	<?php if(isset($_GET['active_error'])):?><span>采集参数出错</span><?php endif;?>
 	<br />
-	<a href="plugin.php?plugin=tle_collect">采集单篇</a>
-	<a href="plugin.php?plugin=tle_collect&page=mul">采集多篇</a>
+	<a href="plugin.php?plugin=TleCollect">采集单篇</a>
+	<a href="plugin.php?plugin=TleCollect&page=mul">采集多篇</a>
 	<br />
-	优酷client_id：<input maxlength="255" value="<?php echo $client_id; ?>" name="client_id" placeholder="可选" />
+	优酷client_id(已过时)：<input maxlength="255" value="<?php echo $client_id; ?>" name="client_id" placeholder="可选" />
 	</p>
 	<?php if($_GET['page']==''){?>
 	<form action="" method="post">
@@ -311,6 +313,7 @@ function plugin_setting_view(){
 		</li>
 		<li>
 			缩略图选择器<input maxlength="255" value="<?php echo $coverimg; ?>" name="coverimg" />
+			缩略图选择器属性<input maxlength="255" value="<?php echo $coverimgattr?$coverimgattr:"src"; ?>" name="coverimgattr" />
 		</li>
 		<li>
 			标题选择器<input name="title" value="<?php echo $title; ?>" maxlength="200" />
@@ -358,6 +361,7 @@ function plugin_setting_view(){
 		</li>
 		<li>
 			缩略图选择器<input maxlength="255" value="<?php if($coverimg!=''){echo $coverimg;}else{echo '.item-cover.current .cover img';} ?>" name="coverimg" />
+			缩略图选择器属性<input maxlength="255" value="<?php if($coverimgattr!=''){echo $coverimgattr;}else{echo 'src';} ?>" name="coverimgattr" />
 		</li>
 		<li>
 			列表容器选择器<input name="container" value="<?php if($container!=''){echo $container;}else{echo '.box-video a';} ?>" maxlength="200" />
